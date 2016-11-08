@@ -1,36 +1,30 @@
-# coolest-animal-ring-lambda
+# The coolest animal from ring to AWS Lambda
 
-FIXME: description
+It's a simple example demonstrating (check the commit history) how a ring app
+can be easily transformed into an AWS Lambda function.
 
-## Installation
+To run it on AWS Lambda, generate an uberjar first:
 
-Download from http://example.com/FIXME.
+`lein uberjar`
 
-## Usage
+Then you need to create the function:
+```
+aws lambda create-function \
+      --region eu-west-1 \
+      --function-name clojure-meetup-coolest-animal \
+      --zip-file fileb://$(pwd)/target/uberjar/coolest-animal-ring-lambda-0.1.0-SNAPSHOT-standalone.jar \
+      --role arn:aws:iam::YOUR_ACCOUNT_ID:role/lambda_basic_execution \
+      --handler coolest-animal-ring-lambda.core.HandlerFn \
+      --runtime java8
+```
 
-FIXME: explanation
+...and finally, call it:
 
-    $ java -jar coolest-animal-ring-lambda-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2016 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+```
+aws lambda invoke \
+      --invocation-type RequestResponse \
+      --function-name clojure-meetup-coolest-animal \
+      --region eu-west-1 \
+      --payload '"elephant,turtle,camel,crocodile,poodle"' \
+      out.txt
+```
